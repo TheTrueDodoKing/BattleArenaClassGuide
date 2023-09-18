@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -34,6 +35,9 @@ namespace HelloDungeon
         Character John_DarkSouls;
         Character LucyJill;
         Character Tree_Lobster;
+        
+        Character[] Enemies;
+        int currentEnemyIndex = 0;
 
         Character Player;
         float Attack(Character attacker, Character defender)
@@ -71,7 +75,7 @@ namespace HelloDungeon
 
             if (battleChoice == "1")
             {
-                monster2.Health = Attack(Player, monster2);
+                monster2.Health = 0;
                 Console.WriteLine("You used " + Player.CurrentWeapon.Name + " ");
 
                 if (monster2.Health <= 0)
@@ -151,29 +155,75 @@ namespace HelloDungeon
         }
         void BattleScene()
         {
-            Fight(ref LucyJill);
+            Fight(ref Enemies[currentEnemyIndex]);
             
             Console.Clear();
 
-            if (Player.Health <= 0 || LucyJill.Health <= 0)
+            if (Player.Health <= 0 || Enemies[currentEnemyIndex].Health <= 0)
             {
                 currentScene = 2;
             }
         }
         void WinReusultsScene()
         {
-            if (Player.Health > 0 && LucyJill.Health <= 0)
+            if (Player.Health > 0 && Enemies[currentEnemyIndex].Health <= 0)
             {
                 Console.WriteLine("The Winner is: " + Player.Name);
+                currentScene = 1;
+                currentEnemyIndex++;
+
+                if (currentEnemyIndex >= Enemies.Length)
+                {
+                    gameOver = true;
+                }
             }
-            else if (LucyJill.Health > 0 && Player.Health <= 0)
+            else if (Enemies[currentEnemyIndex].Health > 0 && Player.Health <= 0)
             {
-                Console.WriteLine("The Winner is: " + LucyJill.Name);
+                Console.WriteLine("The Winner is: " + Enemies[currentEnemyIndex].Name);
+                currentScene = 3;
             }
             Console.ReadKey(true);
             Console.Clear();
+            
+        }
+            void GetArray(int[] numbers)
+        {
+            int sum = 0;
+            for ( int i = 0; i < numbers.Length; i++ )
+            {
+                sum = sum + numbers[i];
+                
+            }
+            Console.WriteLine(sum);
+        }
+        void BigRay(int[] numbers)
+        {
+            int biggestNumber = numbers[0];
+
+            for(int i = 0; 1 < numbers.Length; i++ )
+            {
+                if (numbers[i] > biggestNumber)
+                {
+                    biggestNumber = numbers[i];
+                }
+            }
+            Console.WriteLine(biggestNumber);
         }
 
+
+        void EndGameScene()
+        {
+            string playerChoice = GetInput("You Died. Play Again?", "Yes", "No", "", "");
+                
+                if (playerChoice == "1")
+                {
+                    currentScene = 0;
+                }
+                else if (playerChoice == "2")
+                {
+                    gameOver = true;
+                }
+        }
         void Start()
         {
             Weapon Pitchfork;
@@ -236,6 +286,8 @@ namespace HelloDungeon
             Tree_Lobster.Defense = 40f;
             Tree_Lobster.Stamina = 100.5f;
             Tree_Lobster.CurrentWeapon = Earthen_Claws;
+            //                              0           1               2           3
+            Enemies = new Character[4] { JoePable, John_DarkSouls, LucyJill, Tree_Lobster };
 
             Player.Name = "";
             Player.Health = 0f;
@@ -257,6 +309,10 @@ namespace HelloDungeon
             else if (currentScene == 2)
             {
                 WinReusultsScene();
+            }
+            else if(currentScene == 3)
+            {
+                EndGameScene();
             }
         }
         void End()
