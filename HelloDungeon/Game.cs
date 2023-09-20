@@ -12,7 +12,6 @@ namespace HelloDungeon
             public string Name;
             public float Damage;
             public float Defense;
-            public float Stamina;
         }
     class Game
     {
@@ -24,11 +23,12 @@ namespace HelloDungeon
         Character John_DarkSouls;
         Character LucyJill;
         Character Tree_Lobster;
+        Character Brittle_OldMan;
         
         Character[] Enemies;
         int currentEnemyIndex = 0;
 
-        Character Player;
+        Player PlayerCharacter;
         
 
         //float Heal(Monster healing, float healAmount)
@@ -41,16 +41,16 @@ namespace HelloDungeon
         //}
         void Fight(ref Character monster2)
         {
-            Player.PrintStats();
+            PlayerCharacter.PrintStats();
             monster2.PrintStats();
 
             bool isDefending = false;
-            string battleChoice = GetInput("Choose an action", "Attack", "Defend", "Run", "Forfeit");
+            string battleChoice = PlayerCharacter.GetInput("Choose an action", "Attack", "Defend", "Forfeit");
 
             if (battleChoice == "1")
             {
-                monster2.TakeDamage(Player.GetDamage());
-                Console.WriteLine("You used " + Player.GetWeapon().Name + " ");
+                monster2.TakeDamage(PlayerCharacter.GetDamage());
+                Console.WriteLine("You used " + PlayerCharacter.GetWeapon().Name + " ");
 
                 if (monster2.GetHealth() <= 0)
                 {
@@ -59,62 +59,46 @@ namespace HelloDungeon
             }
             else if (battleChoice == "2")
             {
-                Player.RaiseDefense();
+                PlayerCharacter.RaiseDefense();
                 Console.WriteLine("You block");
                 isDefending = true;
             }
             else if (battleChoice == "3")
             {
-                Console.WriteLine("You fled the battle");
-                currentScene = 2;
-            }
-            else if (battleChoice == "4")
-            {
                 gameOver = true;
             }
-            Console.WriteLine(monster2.GetName() + " Strikers " + Player.GetName();
-            Player.TakeDamage(monster2.GetDamage());
+            Console.WriteLine(monster2.GetName() + " Strikers " + PlayerCharacter.GetName());
+            PlayerCharacter.TakeDamage(monster2.GetDamage());
             Console.ReadKey(true);
 
             if (isDefending == true)
             {
-                Player.ResetDefense();
+                PlayerCharacter.ResetDefense();
             }
         }
-        string GetInput(string prompt, string option1, string option2, string option3, string option4)
-        {
-            string playerChoice = "";
-
-            Console.WriteLine(prompt);
-            Console.WriteLine("1. " + option1);
-            Console.WriteLine("2. " + option2);
-            Console.WriteLine("3. " + option3);
-            Console.WriteLine("4. " + option4);
-
-            playerChoice = Console.ReadLine();
-
-            return playerChoice;
-        }
+        
         void CharacterSelectionScene()
         {
-            string characterChoice = GetInput("Choose Your Character", JoePable.GetName(), John_DarkSouls.GetName(), LucyJill.GetName(), Tree_Lobster.GetName());
+            PlayerCharacter = new Player();
+            string characterChoice = PlayerCharacter.GetInput("Choose Your Character", JoePable.GetName(), John_DarkSouls.GetName(), LucyJill.GetName(), Tree_Lobster.GetName());
             
+
                 if (characterChoice == "1")
                 {
-                    Player = JoePable;
+                    PlayerCharacter = new Player(JoePable.GetName(), JoePable.GetHealth(), JoePable.GetDamage(), JoePable.GetDefense(), JoePable.GetWeapon());
                 }
                 else if (characterChoice == "2")
                 {
-                    Player = John_DarkSouls;                   
-                }
+                    PlayerCharacter = new Player(John_DarkSouls.GetName(), John_DarkSouls.GetHealth(), John_DarkSouls.GetDamage(), John_DarkSouls.GetDefense(), John_DarkSouls.GetWeapon());
+            }
                 else if (characterChoice == "3")
                 {
-                    Player = LucyJill;                 
-                }
+                    PlayerCharacter = new Player(LucyJill.GetName(), LucyJill.GetHealth(), LucyJill.GetDamage(), LucyJill.GetDefense(), LucyJill.GetWeapon());
+            }
                 else if (characterChoice == "4")
                 {
-                    Player = Tree_Lobster;                 
-                }
+                    PlayerCharacter = new Player(Tree_Lobster.GetName(), Tree_Lobster.GetHealth(), Tree_Lobster.GetDamage(), Tree_Lobster.GetDefense(), Tree_Lobster.GetWeapon());
+            }
                 else
                 {
                     Console.WriteLine("Invalid Input");
@@ -122,7 +106,7 @@ namespace HelloDungeon
                     Console.ReadKey(true);
                     return;
                 }
-            Player.PrintStats();
+            PlayerCharacter.PrintStats();
             Console.ReadKey(true);
             Console.Clear();
             currentScene = 1;
@@ -133,16 +117,16 @@ namespace HelloDungeon
             
             Console.Clear();
 
-            if (Player.GetHealth() <= 0 || Enemies[currentEnemyIndex].GetHealth() <= 0)
+            if (PlayerCharacter.GetHealth() <= 0 || Enemies[currentEnemyIndex].GetHealth() <= 0)
             {
                 currentScene = 2;
             }
         }
         void WinReusultsScene()
         {
-            if (Player.GetHealth() > 0 && Enemies[currentEnemyIndex].GetHealth() <= 0)
+            if (PlayerCharacter.GetHealth() > 0 && Enemies[currentEnemyIndex].GetHealth() <= 0)
             {
-                Console.WriteLine("The Winner is: " + Player.GetName());
+                Console.WriteLine("The Winner is: " + PlayerCharacter.GetName());
                 currentScene = 1;
                 currentEnemyIndex++;
 
@@ -151,7 +135,7 @@ namespace HelloDungeon
                     gameOver = true;
                 }
             }
-            else if (Enemies[currentEnemyIndex].GetHealth() > 0 && Player.GetHealth() <= 0)
+            else if (Enemies[currentEnemyIndex].GetHealth() > 0 && PlayerCharacter.GetHealth() <= 0)
             {
                 Console.WriteLine("The Winner is: " + Enemies[currentEnemyIndex].GetName());
                 currentScene = 3;
@@ -187,7 +171,7 @@ namespace HelloDungeon
 
         void EndGameScene()
         {
-            string playerChoice = GetInput("You Died. Play Again?", "Yes", "No", "", "");
+            string playerChoice = PlayerCharacter.GetInput("You Died. Play Again?", "Yes", "No");
                 
                 if (playerChoice == "1")
                 {
@@ -204,44 +188,46 @@ namespace HelloDungeon
             Pitchfork.Name = "Pitchfork";
             Pitchfork.Damage = 5f;
             Pitchfork.Defense = 0f;
-            Pitchfork.Stamina = 4f;
 
             Weapon Solar_Eclipse;
             Solar_Eclipse.Name = "The Solar Eclipse";
             Solar_Eclipse.Damage = 20f;
             Solar_Eclipse.Defense = 2f;
-            Solar_Eclipse.Stamina = 0f;
 
             Weapon Cracked_Mirror;
             Cracked_Mirror.Name = "Cracked Mirror";
             Cracked_Mirror.Damage = 2f;
             Cracked_Mirror.Defense = 3f;
-            Cracked_Mirror.Stamina = 8f;
 
             Weapon Earthen_Claws;
             Earthen_Claws.Name = "Earthen Claws";
             Earthen_Claws.Damage = 8f;
             Earthen_Claws.Defense = 4f;
-            Earthen_Claws.Stamina = 0f;
+
+            Weapon Fragile;
+            Fragile.Name = "Fragile Bones";
+            Fragile.Damage = 0f;
+            Fragile.Defense = -1f;
 
             Weapon Default;
             Default.Name = "Default";
             Default.Damage = 0f;
             Default.Defense = 0f;
-            Default.Stamina = 0f;
 
-            JoePable = new Character("JoePable", 100f, 2f, 3f, 3f, Pitchfork);
+            JoePable = new Character("JoePable", 100f, 2f, 3f, Pitchfork);
 
             John_DarkSouls = new Character("John Darksouls", 500f, 50f, 15.5f, Solar_Eclipse);
 
             LucyJill = new Character("Lucy Jill Dirtbag Biden", 52f, 37f, 5f, Cracked_Mirror);
 
-            Tree_Lobster = new Character("Tree Lobster", 1000f, 10f, 40f, Earthen_Claws);
+            Tree_Lobster = new Character("Tree Lobster", 500f, 10f, 40f, Earthen_Claws);
+
+            Brittle_OldMan = new Character("Brittle Old Man", 1f, 1f, 1f, Fragile);
             
             //                              0           1               2           3
-            Enemies = new Character[4] { JoePable, John_DarkSouls, LucyJill, Tree_Lobster };
+            Enemies = new Character[5] { JoePable, John_DarkSouls, LucyJill, Tree_Lobster, Brittle_OldMan};
 
-            Player = new Character("", 0f, 0f, 0f, Default);
+            PlayerCharacter = new Player("", 0f, 0f, 0f, Default);
             
         }
         void Update()

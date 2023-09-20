@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace HelloDungeon
 {
@@ -12,10 +13,17 @@ namespace HelloDungeon
         private float _health;
         private float _damage;
         private float _defense;
-        private float _defenseBoost;
-        private float _stamina;
+        private float _defenseBoost = 5f;
+        
         private Weapon _currentWeapon;
 
+        public Character()
+        {
+            _name = "";
+            _health = 0f;
+            _damage = 0f;
+            _defense = 0f;
+        }
         public Character(string name, float health, float damage, float defense, Weapon weapon)
         {
             _name = name;
@@ -37,7 +45,10 @@ namespace HelloDungeon
         {
             return _currentWeapon;
         }
-        
+        public float GetDefense()
+        {
+            return _defense;
+        }
         public void RaiseDefense()
         {
             _defense += _defenseBoost;
@@ -50,7 +61,7 @@ namespace HelloDungeon
         {
             return _name;
         }
-        public void PrintStats()
+        public virtual void PrintStats()
         {
             Console.WriteLine("Name: " + _name);
             Console.WriteLine("Health: " + _health);
